@@ -3,8 +3,9 @@
 
 #include <Arduino.h>
 #include "Config.h"
-#include "SmaRiWifi.h"
-#include "SmaRiDisplay.h"
+#include "SmaRIWifi.h"
+#include "SmaRIDisplay.h"
+#include "SmaRILed.h"
 
 class SmaRiApp {
 public:

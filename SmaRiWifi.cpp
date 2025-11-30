@@ -1,4 +1,4 @@
-#include "SmaRiWifi.h"
+#include "SmaRIWifi.h"
 
 SmaRiWifi::SmaRiWifi(const char* ssid,
                      const char* pass,

@@ -1,4 +1,4 @@
-#include "SmaRiApp.h"
+#include "SmaRIApp.h"
 
 SmaRiApp::SmaRiApp()
 : _wifi(WIFI_SSID,
@@ -10,8 +10,16 @@ SmaRiApp::SmaRiApp()
         WIFI_DNS1,
         WIFI_DNS2)
 {}
+#ifndef LED_BUILTIN
+  #define LED_BUILTIN 2
+#endif
+
+const int STATUS_LED_PIN = LED_BUILTIN;
 
 void SmaRiApp::setup() {
+  pinMode(STATUS_LED_PIN, OUTPUT);
+  digitalWrite(STATUS_LED_PIN, HIGH); 
+
   _initStart = millis();
 
   _display.begin();

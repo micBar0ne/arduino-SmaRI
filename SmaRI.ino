@@ -2,7 +2,7 @@
 // Project name: SmaRI
 // Created by: micBar0ne
 
-#include "SmaRiApp.h"
+#include "SmaRIApp.h"
 
 SmaRiApp app;
 

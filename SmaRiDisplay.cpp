@@ -1,4 +1,4 @@
-#include "SmaRiDisplay.h"
+#include "SmaRIDisplay.h"
 #include <math.h>
 
 SmaRiDisplay::SmaRiDisplay()
