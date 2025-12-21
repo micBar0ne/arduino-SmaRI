@@ -65,4 +65,13 @@ void SmaRiApp::loop() {
       _statusLed.setMode(LedMode::Connecting);
       break;
   }
+
+  
+  if (s == WifiConnState::CONNECTED && !_web.isRunning()) {
+    _web.begin();
+  } else if (s !=  WifiConnState::CONNECTED && _web.isRunning()) {
+    _web.end();
+  }
+
+  _web.loop();
 }

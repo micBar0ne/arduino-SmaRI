@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef SMARI_CONFIG_H
 #define SMARI_CONFIG_H
 
@@ -11,22 +13,22 @@
 static const int STATUS_LED_PIN = LED_BUILTIN;
 
 // ---------- WIFI SETTINGS ----------
-const char* WIFI_SSID = "<YOUR-SSID>";
-const char* WIFI_PASS = "<YOUR-PASSWORD>";
+inline constexpr const char* WIFI_SSID = "<YOUR-SSID>";
+inline constexpr const char* WIFI_PASS = "<YOUR-PASSWORD>";
 
-static const uint32_t WIFI_CONNECT_TIMEOUT_MS = 15000;
-static const uint32_t WIFI_RETRY_INTERVAL_MS  = 5000;
+inline constexpr const uint32_t WIFI_CONNECT_TIMEOUT_MS = 15000;
+inline constexpr const uint32_t WIFI_RETRY_INTERVAL_MS  = 5000;
 
 // ---- Static IP settings ----
-static const bool WIFI_USE_STATIC_IP = true;
-static const IPAddress WIFI_LOCAL_IP(192, 168, 1, 87);
-static const IPAddress WIFI_GATEWAY(192, 168, 1, 1);
-static const IPAddress WIFI_SUBNET (255, 255, 255, 0);
-static const IPAddress WIFI_DNS1   (1, 1, 1, 1);
-static const IPAddress WIFI_DNS2   (8, 8, 8, 8);
+inline const bool WIFI_USE_STATIC_IP = true;
+inline const IPAddress WIFI_LOCAL_IP(192, 168, 1, 87);
+inline const IPAddress WIFI_GATEWAY(192, 168, 1, 1);
+inline const IPAddress WIFI_SUBNET (255, 255, 255, 0);
+inline const IPAddress WIFI_DNS1   (1, 1, 1, 1);
+inline const IPAddress WIFI_DNS2   (8, 8, 8, 8);
 
 // ---------- UI SETTINGS ----------
-static const uint32_t INIT_SCREEN_DURATION_MS = 2000;
-static const uint32_t WIFI_SHOW_INFO_TIMEOUT  = 5000;
+inline const uint32_t INIT_SCREEN_DURATION_MS = 2000;
+inline const uint32_t WIFI_SHOW_INFO_TIMEOUT  = 5000;
 
 #endif
