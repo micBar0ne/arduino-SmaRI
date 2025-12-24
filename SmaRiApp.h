@@ -7,6 +7,7 @@
 #include "SmaRIDisplay.h"
 #include "SmaRILed.h"
 #include "SmaRIWebServer.h"
+#include "SmaRiRelayController.h"
 
 class SmaRiApp {
 public:
@@ -20,6 +21,7 @@ private:
   SmaRiWifi    _wifi;
   SmaRiDisplay _display;
   SmaRiWebServer _web;
+  SmaRiRelayController _relay;
 
   unsigned long _initStart = 0;
 };

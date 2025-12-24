@@ -31,4 +31,12 @@ inline const IPAddress WIFI_DNS2   (8, 8, 8, 8);
 inline const uint32_t INIT_SCREEN_DURATION_MS = 2000;
 inline const uint32_t WIFI_SHOW_INFO_TIMEOUT  = 5000;
 
+// ---------- RELAY SETTINGS ----------
+inline constexpr int RELAY1_PIN = 26;
+inline constexpr int RELAY2_PIN = 27;
+
+inline constexpr bool RELAY_ACTIVE_LOW = true;
+
+inline constexpr uint32_t RELAY_DEFAULT_PULSE_MS = 800;
+
 #endif

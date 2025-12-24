@@ -11,6 +11,8 @@ SmaRiApp::SmaRiApp()
         WIFI_DNS2)
 {}
 
+bool _relayTestDone = false;
+
 void SmaRiApp::setup() {
   _statusLed.begin(STATUS_LED_PIN);
   _statusLed.setMode(LedMode::Connecting);
@@ -21,6 +23,8 @@ void SmaRiApp::setup() {
 
   _wifi.setTimeouts(WIFI_CONNECT_TIMEOUT_MS, WIFI_RETRY_INTERVAL_MS);
   _wifi.begin();
+
+  _relay.begin();
 }
 
 void SmaRiApp::loop() {
@@ -44,6 +48,11 @@ void SmaRiApp::loop() {
     case WifiConnState::CONNECTED: {
       unsigned long connectedFor = now - _wifi.connectedSince();
       int rssi = _wifi.rssi();
+
+      if (!_relayTestDone) {
+        _relayTestDone = true;
+        _relay.trigger(RelayId::RELAY_1, 800);
+      }
       
       _statusLed.setMode(LedMode::Connected);
 
@@ -74,4 +83,6 @@ void SmaRiApp::loop() {
   }
 
   _web.loop();
+
+  _relay.loop(now);
 }
