@@ -3,6 +3,12 @@
 #ifndef SMARI_CONFIG_H
 #define SMARI_CONFIG_H
 
+#include "Secrets.h"
+
+#ifndef SMARI_WIFI_SSID
+  #error "Missing Secrets.h. Copy Secrets.h.example to Secrets.h and fill credentials."
+#endif
+
 #include <Arduino.h>
 #include <WiFi.h>
 
@@ -12,14 +18,14 @@
 
 static const int STATUS_LED_PIN = LED_BUILTIN;
 
-// ---------- WEB AUTH ----------
-inline constexpr char WEB_USER[] = "admin";
-inline constexpr char WEB_PASS[] = "password";
-inline constexpr bool WEB_AUTH_ENABLED = true;
-
 // ---------- WIFI SETTINGS ----------
-inline constexpr const char* WIFI_SSID = "<YOUR-SSID>";
-inline constexpr const char* WIFI_PASS = "<YOUR-PASSWORD>";
+inline constexpr char WIFI_SSID[] = SMARI_WIFI_SSID;
+inline constexpr char WIFI_PASS[] = SMARI_WIFI_PASS;
+
+// ---------- WEB AUTH ----------
+inline constexpr char WEB_USER[] = SMARI_WEB_USER;
+inline constexpr char WEB_PASS[] = SMARI_WEB_PASS;
+inline constexpr bool WEB_AUTH_ENABLED = true;
 
 inline constexpr const uint32_t WIFI_CONNECT_TIMEOUT_MS = 15000;
 inline constexpr const uint32_t WIFI_RETRY_INTERVAL_MS  = 5000;

@@ -7,7 +7,7 @@ SmaRiWebServer::SmaRiWebServer(uint16_t port)
 void SmaRiWebServer::registerRoutes() {
   _server.on("/health", HTTP_GET, [this]() {
     if (!requireAuth()) return;
-    
+
     _server.send(200, "text/plain", "OK");
   });
 
@@ -330,10 +330,33 @@ void SmaRiWebServer::setRelayCommandHandler(
 bool SmaRiWebServer::requireAuth() {
   if (!WEB_AUTH_ENABLED) return true;
 
+  const unsigned long now = millis();
+
+  // Lockout active
+  if (_lockoutUntilMs > now) {
+    _server.send(403, "text/plain", "Temporarily locked");
+    return false;
+  }
+
+  // Auth success
   if (_server.authenticate(WEB_USER, WEB_PASS)) {
+    _authFailures = 0;
     return true;
   }
 
-  _server.requestAuthentication(); // sends 401 + WWW-Authenticate header
+  // Auth failure
+  _authFailures++;
+
+  // Progressive delay
+  if (_authFailures >= 4 && _authFailures < 7) {
+    delay(2000); // short penalty
+  }
+
+  // Hard lockout
+  if (_authFailures >= 7) {
+    _lockoutUntilMs = now + (5UL * 60UL * 1000UL); // 5 minutes
+  }
+
+  _server.requestAuthentication();
   return false;
 }

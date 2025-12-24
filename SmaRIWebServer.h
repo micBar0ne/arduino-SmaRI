@@ -26,6 +26,9 @@ private:
   bool _running = false;
   bool requireAuth();
 
+  unsigned int _authFailures = 0;
+  unsigned long _lockoutUntilMs = 0;
+
   std::function<String()> _statusProvider;
   std::function<bool(uint8_t, uint32_t, String&)> _relayHandler;
 };
