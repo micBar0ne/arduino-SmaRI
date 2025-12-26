@@ -58,30 +58,6 @@ bool SmaRiRelayController::trigger(RelayId id, uint32_t durationMs) {
   return true;
 }
 
-bool SmaRiRelayController::triggerDoubleTap(RelayId id, uint32_t onMs, uint32_t gapMs) {
-  _lastError = nullptr;
-
-  if (_busy) { _lastError = "relay busy"; return false; }
-  if (onMs == 0 || onMs > 2000) { _lastError = "invalid onMs"; return false; }
-  if (gapMs == 0 || gapMs > 2000) { _lastError = "invalid gapMs"; return false; }
-  if (pinFor(id) < 0) { _lastError = "invalid relay id"; return false; }
-
-  _activeRelay = id;
-  _lastRelay = id;
-  _lastActionAtMs = millis();
-
-  _tapOnMs = onMs;
-  _tapGapMs = gapMs;
-
-  // Start pulse 1
-  setRelayPin(id, true);
-  _seq = SeqState::PULSE1_ON;
-  _stepEndAtMs = _lastActionAtMs + _tapOnMs;
-
-  _busy = true;
-  return true;
-}
-
 uint32_t SmaRiRelayController::remainingMs(unsigned long now) const {
   if (!_busy) return 0;
   if ((long)(_pulseEndAtMs - now) <= 0) return 0;

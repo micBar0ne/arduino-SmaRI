@@ -50,8 +50,4 @@ inline constexpr bool RELAY_ACTIVE_LOW = true;
 
 inline constexpr uint32_t RELAY_DEFAULT_PULSE_MS = 800;
 
-inline constexpr uint32_t RELAY_TAP_ON_MS  = 120;
-inline constexpr uint32_t RELAY_TAP_GAP_MS = 120;
-inline constexpr bool RELAY_USE_DOUBLE_TAP = true;
-
 #endif
