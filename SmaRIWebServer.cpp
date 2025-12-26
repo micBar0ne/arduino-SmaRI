@@ -222,7 +222,7 @@ void SmaRiWebServer::registerRoutes() {
             </div>
 
             <div class="grid">
-              <button id="btn1" onclick="triggerRelay(1)">Garage</button>
+              <button id="btn1" onclick="triggerRelay(1)">Driveway</button>
               <button id="btn2" onclick="triggerRelay(2)">Pedestrian</button>
             </div>
 
