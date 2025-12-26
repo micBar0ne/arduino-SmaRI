@@ -1,82 +1,206 @@
+
 # SmaRI – Smart Remote Intercom
 
-**SmaRI** (Smart Remote Intercom) is a compact and smart Wi-Fi-enabled device that upgrades any traditional intercom system, allowing you to open gates or doors remotely through the internet using an Android app.
+SmaRI is an ESP32-based smart remote intercom / relay controller designed to be **securely accessible over the internet** via DDNS and HTTP, with a clean modular architecture and a simple web UI.
+
+The project is built with **maintainability, safety, and long‑term reliability** in mind.
 
 ---
 
-## 🚀 Project Overview
+## ✨ Features
 
-SmaRI connects to your existing intercom’s control lines and gives it Wi-Fi connectivity using an **ESP32-based Arduino board**.  
-It uses two **5V mechanical relays** to simulate button presses for gate or door opening, and an **OLED display (SSD1306 128×64)** to show network status, Wi-Fi signal strength, and operation feedback.
-
-The goal is to make any analog intercom “smart” — controllable from anywhere — with minimal modification to the original installation.
-
----
-
-## ⚙️ How It Works
-
-- The **ESP32 module**, mounted on an Arduino-compatible board, manages Wi-Fi and control logic.  
-- It connects to your **home network** and listens for **HTTP GET** requests from an **Android app** or a web interface.  
-- When a command is received, it **activates one of the two relays** for about 0.5–1 second to mimic pressing a button.  
-- The **OLED display** shows:
-  - Wi-Fi connection status  
-  - Signal strength  
-  - Action feedback (e.g., “Gate Opening”, “Pedestrian Gate Triggered”)  
+- ESP32-based controller
+- Non-blocking relay control
+- Web UI (mobile-friendly, dark mode)
+- HTTP JSON API
+- HTTP Basic Authentication
+- Optional API Token authentication
+- Audit log (ring buffer, fixed memory usage)
+- Static IP support
+- DDNS-ready (router-based)
+- Secrets isolated from repository
+- OOP-style modular architecture
 
 ---
 
-## 🧩 Hardware Components
+## 🧱 Project Architecture
 
-| Component | Description |
-|------------|-------------|
-| **ESP32 with onboard OLED (SSD1306 128×64)** | Main microcontroller with display |
-| **2-channel 5V relay module** | Controls two independent circuits (garage gate + pedestrian gate) |
-| **5V Power Supply** | Powers ESP32 and relays |
-| **DDNS / Port Forwarding** | Enables remote internet control |
-| **Wires, breadboard, connectors** | For wiring and prototyping |
-| **3D-Printed Case** | Enclosure for all components |
+The project is structured to keep responsibilities clearly separated:
 
----
-
-## 🧠 Features
-
-- 🌐 Wi-Fi remote control via HTTP GET requests  
-- 📱 Android app support for easy operation  
-- 🔌 Dual relay output — control two different gates or functions  
-- 🖥️ Onboard OLED display showing connection, signal, and operation status  
-- 🧾 Supports DDNS for remote access outside the local network  
-- 🧰 Fully open-source and Arduino-compatible  
+```
+SmaRI/
+├── SmaRI.ino                # Arduino entry point
+├── SmaRiApp.{h,cpp}         # Application orchestration
+├── SmaRiWifi.{h,cpp}        # Wi-Fi connection & state
+├── SmaRiWebServer.{h,cpp}   # HTTP server & routing
+├── SmaRiRelayController.{h,cpp} # Relay timing & GPIO control
+├── SmaRiAuditLog.{h,cpp}    # Fixed-size audit log (ring buffer)
+├── SmaRiDisplay.{h,cpp}     # OLED UI
+├── SmaRiLed.{h,cpp}         # Status LED
+├── Config.h                 # Non-secret configuration
+├── Secrets.h.example        # Example secrets (committed)
+└── Secrets.h                # Real secrets (NOT committed)
+```
 
 ---
 
-## 🧱 Development Steps
+## 🔐 Security Model
 
-1. **Hardware Setup** – Connect ESP32, relays, OLED display, and power supply.  
-2. **Basic Test Script** – Verify each relay toggles correctly via serial monitor.  
-3. **Wi-Fi Integration** – Connect to local network and handle HTTP GET commands.  
-4. **Display UI** – Show connection, RSSI signal, and triggered actions.  
-5. **App Communication** – Send relay commands from Android app or browser.  
-6. **Enclosure Design** – 3D print a custom box for the device.  
-7. **Final Test** – Integrate with real intercom and verify timing and reliability.  
+### Authentication
+- **Web UI**: HTTP Basic Auth
+- **API endpoints**: API token OR Basic Auth
+
+### Protection
+- No credentials committed to GitHub
+- Fixed relay duration enforced by firmware
+- Audit logging for relay actions
+- Non-blocking logic (no `delay()`)
+
+⚠️ **Important**: Basic Auth over HTTP is not encrypted.  
+For internet exposure, use **VPN or HTTPS reverse proxy**.
 
 ---
 
-## 🧭 Future Improvements
+## 🔑 Secrets Handling
 
-- Add MQTT / Home Assistant integration  
-- Include configuration menu on OLED screen  
-- Add local button input for manual gate control  
-- Implement OTA firmware updates  
+Secrets are **never committed**.
+
+### Setup
+1. Copy:
+   ```
+   Secrets.h.example → Secrets.h
+   ```
+2. Fill in your credentials.
+
+### `.gitignore`
+```
+Secrets.h
+```
+
+### Example `Secrets.h.example`
+```cpp
+#define SMARI_WIFI_SSID "YOUR_SSID"
+#define SMARI_WIFI_PASS "YOUR_PASSWORD"
+
+#define SMARI_WEB_USER "admin"
+#define SMARI_WEB_PASS "change-me"
+
+#define SMARI_API_TOKEN "change-me-long-random"
+```
+
+---
+
+## 🌐 Remote Access (DDNS)
+
+SmaRI does **not implement DDNS in firmware**.
+
+DDNS must be handled by:
+- Your router
+- A NAS / home server
+- A PC running a DDNS client
+
+### Typical setup
+- Public DNS: `http://yourname.ddns.net`
+- Router forwards WAN port → ESP32 local IP (port 80)
+
+Example:
+```
+WAN TCP 1987 → 192.168.1.87:80
+```
+
+Then access:
+```
+http://yourname.ddns.net:1987/
+```
+
+---
+
+## 📡 HTTP API
+
+### Health
+```
+GET /health
+```
+
+### Status
+```
+GET /api/status
+```
+
+Returns JSON:
+```json
+{
+  "uptime_ms": 123456,
+  "wifi_state": "connected",
+  "ip": "192.168.1.87",
+  "rssi": -55,
+  "relay_busy": false,
+  "relay_remaining_ms": 0
+}
+```
+
+### Relay Trigger
+```
+GET /api/relay?id=1
+```
+
+- Relay duration is **enforced by firmware**
+- Client-provided duration is ignored or clamped
+
+### Audit Log
+```
+GET /api/log
+```
+
+Returns a JSON array (most recent first).
+
+---
+
+## 🧠 Relay Logic
+
+- Non-blocking timing using `millis()`
+- Fixed maximum duration (safety)
+- Busy state prevents overlapping activations
+- Relay controller never blocks the main loop
+
+---
+
+## 🖥️ Web UI
+
+- Embedded HTML (no external assets)
+- Dark mode
+- Auto-refresh status
+- Buttons disabled only while relay is busy
+- Works on mobile and desktop
+
+---
+
+## 🧪 Stability & Reliability
+
+- No dynamic memory growth
+- Fixed-size audit log
+- No blocking delays
+- Designed for 24/7 uptime
+
+---
+
+## 🚀 Future Enhancements (optional)
+
+- OTA firmware updates
+- Persistent configuration (NVS)
+- mDNS (`smari.local`)
+- HTTPS via reverse proxy
+- VPN-only access (recommended)
 
 ---
 
 ## 📜 License
 
-This project is open-source. Feel free to contribute, adapt, and improve!
+MIT License
 
 ---
 
-## 🧑‍💻 Author
+## 👤 Author
 
-**micBar0ne**  
-Smart Remote Intercom – 2025
+Created by **micBar0ne**  
+Project: **SmaRI – Smart Remote Intercom**
